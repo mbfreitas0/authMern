@@ -1,0 +1,80 @@
+import React from "react";
+import styles from "../Clients/ClientsUpdate.module.css";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Loading from "../../components/layout/Loading";
+import Container from "../layout/Container/Container";
+
+const ClientsUpdate = () => {
+  const { id } = useParams();
+  console.log(id);
+  const [client, setClient] = useState([]);
+  const [showClientForm, setShowClientForm] = useState(false);
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/clients/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        setClient(data);
+      })
+      .catch((err) => console.log(err));
+  }, [id]);
+
+  const toggleClientForm = () => {
+    setShowClientForm(!showClientForm);
+  };
+
+  return (
+    <>
+      {client.firstName ? (
+        <div className={styles.project_details}>
+          <Container>
+            <div>
+              <h1>Cliente: {client.firstName}</h1>
+              <button className={styles.btn} onClick={toggleClientForm}>
+                {!showClientForm ? "Editar Cliente" : "Fechar"}
+              </button>
+              {!showClientForm ? (
+                <div className={styles.project_info}>
+                  <p>
+                    <span>Nome:</span>
+                    {client.firstName}
+                  </p>
+                  <p>
+                    <span>Sobrenome:</span>
+                    {client.lastName}
+                  </p>
+                  <p>
+                    <span>Telefone:</span>
+                    {client.tel}
+                  </p>
+                  <p>
+                    <span>Endereço:</span>
+                    {client.address}
+                  </p>
+                  <p>
+                    <span>Número:</span>
+                    {client.number}
+                  </p>
+                </div>
+              ) : (
+                <div className={styles.project_info}>
+                  <p>Detalhes de Cliente</p>
+                </div>
+              )}
+            </div>
+          </Container>
+        </div>
+      ) : (
+        <Loading />
+      )}
+    </>
+  );
+};
+
+export default ClientsUpdate;

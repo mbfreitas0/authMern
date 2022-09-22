@@ -1,0 +1,24 @@
+Populate
+População é o processo de substituir automaticamente os caminhos especificados no documento por documentos de outras coleções.
+Podemos preencher um único documento, vários documentos, um objeto simples, vários objetos simples ou todos os objetos retornados
+de uma consulta. Vejamos alguns exemplos.
+
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const personSchema = Schema({
+  _id: Schema.Types.ObjectId,
+  name: String,
+  age: Number,
+  stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+});
+
+const storySchema = Schema({
+  author: { type: Schema.Types.ObjectId, ref: 'Person' },
+  title: String,
+  fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+});
+
+const Story = mongoose.model('Story', storySchema);
+const Person = mongoose.model('Person', personSchema);
+
