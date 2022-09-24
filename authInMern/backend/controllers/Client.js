@@ -16,20 +16,30 @@ exports.getAllClients = async (req, res, next) => {
   }
 };
 
-//Buscar por ID
-exports.getByIDClient = async (req, res, next) => {
-  //Extrair o dado da requisição, pela url = req.params
-  //const id = req.params.id;
+// Get a client by id
+exports.getByIDClient = async (request, response) => {
   try {
-    // const client = await Client.findById({ _id: req.params.id }).then(
-    const client = await Client.findById(req.params.id).then((result) => {
-      res.status(200).json({ client: result });
-      // res.status(200).json(client);
-    });
-  } catch (err) {
-    res.status(500).json({ error: err });
+    const client = await Client.findById(request.params.id);
+    response.status(200).json(client);
+  } catch (error) {
+    response.status(404).json({ message: error.message });
   }
 };
+
+//Buscar por ID
+// exports.getByIDClient = async (req, res, next) => {
+//   //Extrair o dado da requisição, pela url = req.params
+//   //const id = req.params.id;
+//   try {
+//     // const client = await Client.findById({ _id: req.params.id }).then(
+//     const client = await Client.findById(req.params.id).then((result) => {
+//       res.status(200).json({ client: result });
+//       // response.status(200).json(client);
+//     });
+//   } catch (err) {
+//     res.status(500).json({ error: err });
+//   }
+// };
 // exports.postClient = async (req, res, next) => {
 //   try {
 //     const postResponse = await Client.post(
@@ -48,56 +58,82 @@ exports.getByIDClient = async (req, res, next) => {
 //   }
 // };
 
-exports.postClient = async (req, res, next) => {
-  const { firstName, lastName, tel, address, number } = req.body;
+// Save data of the client in database
+exports.postClient = async (request, response) => {
+  const client = request.body;
 
-  const client = {
-    firstName,
-    lastName,
-    tel,
-    address,
-    number,
-  };
-  if (!client) {
-    res.status(422).json({ error: "O campo nome do cliente é obrigatorio" });
-  }
-
+  const newClient = new Client(client);
   try {
-    //Criando dados
-    await Client.create(client);
-    res
-      .status(201)
-      .json({ message: "Cliente enserido com sucesso no sistema !" });
+    await newClient.save();
+    response.status(201).json(newClient);
   } catch (error) {
-    res.status(500).json({ error: error });
+    response.status(409).json({ message: error.message });
   }
 };
 
-exports.putClient = async (req, res, next) => {
-  const id = req.params.id;
+// exports.postClient = async (req, res, next) => {
+//   const { firstName, lastName, tel, address, number } = req.body;
 
-  const { firstName, lastName, tel, address, number } = req.body;
+//   const client = {
+//     firstName,
+//     lastName,
+//     tel,
+//     address,
+//     number,
+//   };
+//   if (!client) {
+//     res.status(422).json({ error: "O campo nome do cliente é obrigatorio" });
+//   }
 
-  const client = {
-    firstName,
-    lastName,
-    tel,
-    address,
-    number,
-  };
+//   try {
+//     //Criando dados
+//     await Client.create(client);
+//     res
+//       .status(201)
+//       .json({ message: "Cliente enserido com sucesso no sistema !" });
+//   } catch (error) {
+//     res.status(500).json({ error: error });
+//   }
+// };
 
+// Save data of edited client in the database
+exports.putClient = async (request, response) => {
+  let client = request.body;
+
+  const editClient = new Client(client);
   try {
-    const updatedClient = await Client.updateOne({ _id: id }, client);
-    res.status(200).json(client);
-
-    if (updateClient.matchedCount === 0) {
-      res.status(422).json({ message: "O cliente não foi encontrado" });
-      return;
-    }
+    await Client.updateOne({ _id: request.params.id }, editClient);
+    response.status(201).json(editClient);
   } catch (error) {
-    res.status(500).json({ error: error });
+    response.status(409).json({ message: error.message });
   }
 };
+
+// exports.putClient = async (req, res, next) => {
+//   const id = req.params.id;
+
+//   const { firstName, lastName, tel, address, number } = req.body;
+
+//   const client = {
+//     firstName,
+//     lastName,
+//     tel,
+//     address,
+//     number,
+//   };
+
+//   try {
+//     const updatedClient = await Client.updateOne({ _id: id }, client);
+//     res.status(200).json(client);
+
+//     if (updateClient.matchedCount === 0) {
+//       res.status(422).json({ message: "O cliente não foi encontrado" });
+//       return;
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: error });
+//   }
+// };
 
 exports.deleteClient = async (req, res, next) => {
   const id = req.params.id;
