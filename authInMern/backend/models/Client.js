@@ -6,8 +6,13 @@ const clientSchema = new mongoose.Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     tel: { type: String, required: true },
+    cep: { type: String, required: true },
     address: { type: String, required: true },
     number: { type: String, required: true },
+    complement: { type: String, required: true },
+    neighborhood: { type: String, required: true },
+    city: { type: String, required: true },
+    uf: { type: String, required: true },
   },
   { timestamps: true }
 );
